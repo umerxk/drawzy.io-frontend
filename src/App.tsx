@@ -18,11 +18,11 @@ const App: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
 
   const roomUrl = queryParams.get('room');
-  console.log("roomUrl::", roomUrl);
+  
   useEffect(() => {
     if (roomUrl && enteredRoom) {
-      // const socket = new WebSocket("wss://5db9-154-208-62-234.ngrok-free.app/ws");
-      const socket = new WebSocket("ws://localhost:8080/ws");
+      const socket = new WebSocket("wss://3966-154-208-62-234.ngrok-free.app/ws");
+      // const socket = new WebSocket("ws://localhost:8080/ws");
       setWs(socket);
 
       socket.onopen = () => {
