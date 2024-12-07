@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import { useLocation } from 'react-router-dom';
 
 interface Message {
   username: string;
   text: string;
-  room: string; // Added room field to message structure
+  room: string | null; // Added room field to message structure
 }
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState<string>("");
   const [username, setUsername] = useState<string>("");
-  const [room, setRoom] = useState<string>(""); // State to store the selected room
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [enteredRoom, setEnteredRoom] = useState<boolean>(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
+  const roomUrl = queryParams.get('room');
+  console.log("roomUrl::", roomUrl);
   useEffect(() => {
-    if (room && enteredRoom) {
-      const socket = new WebSocket("wss://5db9-154-208-62-234.ngrok-free.app/ws");
+    if (roomUrl && enteredRoom) {
+      // const socket = new WebSocket("wss://5db9-154-208-62-234.ngrok-free.app/ws");
+      const socket = new WebSocket("ws://localhost:8080/ws");
       setWs(socket);
 
       socket.onopen = () => {
         console.log("WebSocket connected.");
-        socket.send(JSON.stringify({ type: "join", room })); // Send room info to server on connect
+        socket.send(JSON.stringify({ type: "join", room: roomUrl })); // Send room info to server on connect
       };
 
       socket.onclose = (event) => console.log("WebSocket closed:", event.reason);
@@ -31,7 +36,7 @@ const App: React.FC = () => {
       socket.onmessage = (event) => {
         const message: Message = JSON.parse(event.data);
         console.log("mmm", message);
-        if (message.room === room) {
+        if (message.room === roomUrl) {
           // Display only messages from the current room
           setMessages((prev) => [...prev, message]);
         }
@@ -41,14 +46,14 @@ const App: React.FC = () => {
         socket.close();
       };
     }
-  }, [room, enteredRoom]);
+  }, [roomUrl, enteredRoom]);
 
   console.log("messages::", messages);
 
   const sendMessage = () => {
     console.log("ws?.readyState::", ws?.readyState)
     if (ws?.readyState === WebSocket.OPEN && text.trim() && username.trim()) {
-      const message: Message = { username, text, room };
+      const message: Message = { username, text, room: roomUrl };
       ws.send(JSON.stringify(message));
       setText("");
     } else {
@@ -59,7 +64,7 @@ const App: React.FC = () => {
   const joinRoom = () => {
     setEnteredRoom(true);
 
-    if (room.trim() && username.trim()) {
+    if (roomUrl?.trim() && username.trim()) {
       setMessages([]); // Clear messages when switching rooms
       if (ws) ws.close(); // Close any existing WebSocket connection
     } else {
@@ -72,7 +77,7 @@ const App: React.FC = () => {
       <div className="flex flex-col flex-grow max-w-4xl mx-auto bg-gray-800 shadow-md">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-gray-700">
-          <h1 className="text-lg font-semi-bold text-white">Iqra & Umer's Personal Chat App</h1>
+          <h1 className="text-lg font-semi-bold text-white">Chat App</h1>
         </div>
 
         {/* Chat Body */}
@@ -85,13 +90,6 @@ const App: React.FC = () => {
                 placeholder="Your Name"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full max-w-sm px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
-              />
-              <input
-                type="text"
-                placeholder="Room Name"
-                value={room}
-                onChange={(e) => setRoom(e.target.value)}
                 className="w-full max-w-sm px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
               />
               <button
