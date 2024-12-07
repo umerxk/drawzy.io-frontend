@@ -68,45 +68,85 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="App">
-      <div className="chat-container">
-        <h1 className="text-white">Chat App</h1>
-        {!enteredRoom ? (
-          <div className="join-room">
-            <input
-              type="text"
-              placeholder="Your name"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Room name"
-              value={room}
-              onChange={(e) => setRoom(e.target.value)}
-            />
-            <button onClick={joinRoom}>Join Room</button>
-          </div>
-        ) : (
-          <>
-            <div className="messages">
-              {messages.map((msg, index) => (
-                <div key={index}>
-                  <strong>{msg.username}: </strong>{msg.text}
-                </div>
-              ))}
+    <div className="flex flex-col h-screen bg-gray-900">
+      <div className="flex flex-col flex-grow max-w-4xl mx-auto bg-gray-800 shadow-md">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 bg-gray-700">
+          <h1 className="text-lg font-semi-bold text-white">Iqra & Umer's Personal Chat App</h1>
+        </div>
+
+        {/* Chat Body */}
+        <div className="flex flex-grow">
+          {!enteredRoom ? (
+            <div className="flex flex-col items-center justify-center w-full px-6 py-12 space-y-4 bg-gray-800">
+              <h2 className="text-lg font-semibold text-white">Join a Room</h2>
+              <input
+                type="text"
+                placeholder="Your Name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full max-w-sm px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
+              />
+              <input
+                type="text"
+                placeholder="Room Name"
+                value={room}
+                onChange={(e) => setRoom(e.target.value)}
+                className="w-full max-w-sm px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
+              />
+              <button
+                onClick={joinRoom}
+                className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-500"
+              >
+                Join Room
+              </button>
             </div>
-            <input
-              type="text"
-              placeholder="Type a message"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-            <button onClick={sendMessage}>Send</button>
-          </>
-        )}
+          ) : (
+            <div className="flex flex-col flex-grow bg-gray-800">
+              {/* Messages */}
+              <div className="flex-grow overflow-y-auto px-4 py-2 space-y-2 bg-gray-900">
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${msg.username === username
+                        ? "justify-end"
+                        : "justify-start"
+                      }`}
+                  >
+                    <div
+                      className={`px-4 py-2 rounded-xl ${msg.username === username
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-700 text-gray-200"
+                        }`}
+                    >
+                      <strong>{msg.username}:</strong> {msg.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Input */}
+              <div className="flex items-center px-4 py-3 bg-gray-700">
+                <input
+                  type="text"
+                  placeholder="Type a message..."
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  className="flex-grow px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
+                />
+                <button
+                  onClick={sendMessage}
+                  className="px-4 py-2 ml-2 text-white bg-blue-600 rounded-xl hover:bg-blue-500"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
+
   );
 };
 
