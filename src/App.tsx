@@ -118,7 +118,7 @@ const App: React.FC = () => {
         <div className="flex flex-grow">
           {!enteredRoom ? (
             <div className="flex flex-col items-center justify-center w-full px-6 py-12 space-y-4 bg-transparent">
-              <h2 className="text-lg font-semibold text-white">Create a Room</h2>
+              <h2 className="text-lg font-semibold text-white"> {roomUrl ? "Your Name" : "Create a Room" }</h2>
               <input
                 type="text"
                 placeholder="Your Name"
