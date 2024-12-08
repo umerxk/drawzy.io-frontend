@@ -21,6 +21,7 @@ const App: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const messagesEndRef = useRef<any>(null);
   let roomUrl = queryParams.get('room');
+  const inputRef = useRef<any>();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -69,6 +70,7 @@ const App: React.FC = () => {
       const message: Message = { username, text, room };
       ws.send(JSON.stringify(message));
       setText("");
+      inputRef.current.focus();
     } else {
       console.error("WebSocket is not open or missing fields.");
     }
@@ -180,6 +182,8 @@ const App: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Type a message..."
+                    ref={inputRef}
+                    autoFocus
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     className="flex-grow px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
