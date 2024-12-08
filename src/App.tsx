@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { useLocation } from 'react-router-dom';
 import IconCopy from "./icons/IconCopy";
@@ -19,8 +19,17 @@ const App: React.FC = () => {
   const [enteredRoom, setEnteredRoom] = useState<boolean>(false);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-
+  const messagesEndRef = useRef<any>(null);
   let roomUrl = queryParams.get('room');
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]); // Run this effect whenever messages change
+
   useEffect(() => {
     if (room && enteredRoom) {
       const socket = new WebSocket("wss://34e8-154-208-62-234.ngrok-free.app/ws");
@@ -48,7 +57,7 @@ const App: React.FC = () => {
   }, [room, enteredRoom]);
 
   useEffect(() => {
-    if(roomUrl){
+    if (roomUrl) {
       setRoom(roomUrl);
     }
   }, [roomUrl]);
@@ -83,7 +92,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (usernameFromStorage) {
       setUsername(usernameFromStorage);
-      if(roomUrl){
+      if (roomUrl) {
         setEnteredRoom(true);
 
       }
@@ -147,8 +156,7 @@ const App: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col flex-grow bg-gray-800">
-              {/* Messages */}
-              <div className="flex-grow overflow-y-auto px-4 py-2 space-y-2 bg-gray-900 max-h-[88vh] ">
+              <div className="flex-grow overflow-y-auto px-4 py-2 space-y-2 bg-gray-900 max-h-[88vh] pb-[2rem]">
                 {messages.map((msg, index) => (
                   <div
                     key={index}
@@ -163,12 +171,13 @@ const App: React.FC = () => {
                       <strong>{msg.username}:</strong> {msg.text}
                     </div>
                   </div>
-
                 ))}
+                <div ref={messagesEndRef} />
               </div>
 
+
               {/* Input */}
-              <form onSubmit={sendMessage} className="absolute bottom-0 w-full">
+              <form onSubmit={sendMessage} className="absolute bottom-[-10px] w-full">
                 <div className="flex items-center px-4 py-3 bg-gray-900">
                   <input
                     type="text"
