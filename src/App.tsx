@@ -24,7 +24,7 @@ const App: React.FC = () => {
   console.log("roomUrl::", roomUrl);
   useEffect(() => {
     if (roomUrl && enteredRoom) {
-      // const socket = new WebSocket("wss://5db9-154-208-62-234.ngrok-free.app/ws");
+      // const socket = new WebSocket("wss://34e8-154-208-62-234.ngrok-free.app/ws");
       const socket = new WebSocket("ws://localhost:8080/ws");
       setWs(socket);
       console.log("innn")
