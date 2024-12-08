@@ -156,7 +156,7 @@ const App: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col flex-grow bg-gray-800">
-              <div className="flex-grow overflow-y-auto px-4 py-2 space-y-2 bg-gray-900 max-h-[88vh] pb-[2rem]">
+              <div className="flex-grow overflow-y-auto px-4 py-2 space-y-2 bg-gray-900 max-h-[calc(100vh-4rem)] pb-24">
                 {messages.map((msg, index) => (
                   <div
                     key={index}
@@ -175,10 +175,8 @@ const App: React.FC = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-
-              {/* Input */}
-              <form onSubmit={sendMessage} className="absolute bottom-[-10px] w-full">
-                <div className="flex items-center px-4 py-3 bg-gray-900">
+              <form onSubmit={sendMessage} className="fixed bottom-0 w-full bg-gray-900">
+                <div className="flex items-center px-4 py-3">
                   <input
                     type="text"
                     placeholder="Type a message..."
