@@ -20,17 +20,15 @@ const App: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
 
-  const roomUrl = queryParams.get('room');
-  console.log("roomUrl::", roomUrl);
+  let roomUrl = queryParams.get('room');
   useEffect(() => {
-    if (roomUrl && enteredRoom) {
-      // const socket = new WebSocket("wss://34e8-154-208-62-234.ngrok-free.app/ws");
-      const socket = new WebSocket("ws://localhost:8080/ws");
+    if (room && enteredRoom) {
+      const socket = new WebSocket("wss://34e8-154-208-62-234.ngrok-free.app/ws");
+      // const socket = new WebSocket("ws://localhost:8080/ws");
       setWs(socket);
-      console.log("innn")
       socket.onopen = () => {
         console.log("WebSocket connected.");
-        socket.send(JSON.stringify({ type: "join", room: roomUrl })); // Send room info to server on connect
+        socket.send(JSON.stringify({ type: "join", room })); // Send room info to server on connect
       };
 
       socket.onclose = (event) => console.log("WebSocket closed:", event.reason);
@@ -38,9 +36,7 @@ const App: React.FC = () => {
 
       socket.onmessage = (event) => {
         const message: Message = JSON.parse(event.data);
-        console.log("mmm", message);
-        if (message.room === roomUrl) {
-          // Display only messages from the current room
+        if (message.room === room) {
           setMessages((prev) => [...prev, message]);
         }
       };
@@ -49,15 +45,19 @@ const App: React.FC = () => {
         socket.close();
       };
     }
-  }, [roomUrl, enteredRoom]);
+  }, [room, enteredRoom]);
 
-  console.log("messages::", messages);
+  useEffect(() => {
+    if(roomUrl){
+      setRoom(roomUrl);
+    }
+  }, [roomUrl]);
+
 
   const sendMessage = (e: any) => {
     e.preventDefault();
-    console.log("ws?.readyState::", ws?.readyState)
     if (ws?.readyState === WebSocket.OPEN && text.trim() && username.trim()) {
-      const message: Message = { username, text, room: roomUrl };
+      const message: Message = { username, text, room };
       ws.send(JSON.stringify(message));
       setText("");
     } else {
@@ -70,7 +70,7 @@ const App: React.FC = () => {
     localStorage.setItem("username", username);
     history.pushState({}, '', `/?room=${room}`);
 
-    if (roomUrl?.trim() && username.trim()) {
+    if (room?.trim() && username.trim()) {
       setMessages([]); // Clear messages when switching rooms
       if (ws) ws.close(); // Close any existing WebSocket connection
     } else {
@@ -83,9 +83,13 @@ const App: React.FC = () => {
   useEffect(() => {
     if (usernameFromStorage) {
       setUsername(usernameFromStorage);
-      setEnteredRoom(true);
+      if(roomUrl){
+        setEnteredRoom(true);
+
+      }
     }
   }, [usernameFromStorage]);
+
 
   return (
     <div className="flex flex-col h-screen bg-gray-900">
@@ -104,9 +108,7 @@ const App: React.FC = () => {
 
               <div className="cursor-pointer gap-2 flex items-center" onClick={() => {
                 localStorage.removeItem("username");
-                setEnteredRoom(false);
-                setMessages([]);
-                history.pushState({}, '', '/');
+                window.location.href = "/"
               }}>Logout <IconLogout /> </div>
 
             </div>
@@ -118,7 +120,6 @@ const App: React.FC = () => {
         <div className="flex flex-grow">
           {!enteredRoom ? (
             <div className="flex flex-col items-center justify-center w-full px-6 py-12 space-y-4 bg-transparent">
-              <h2 className="text-lg font-semibold text-white"> {roomUrl ? "Your Name" : "Create a Room" }</h2>
               <input
                 type="text"
                 placeholder="Your Name"
@@ -126,7 +127,8 @@ const App: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full max-w-sm px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
               />
-              {!roomUrl && (
+
+              {!(room && enteredRoom) && (
                 <input
                   type="text"
                   placeholder="Room Name"
@@ -140,7 +142,7 @@ const App: React.FC = () => {
                 onClick={joinRoom}
                 className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-500"
               >
-                Create Room
+                {(roomUrl) ? "Join Room" : "Create Room"}
               </button>
             </div>
           ) : (
