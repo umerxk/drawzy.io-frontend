@@ -32,7 +32,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (room && enteredRoom) {
-      const socket = new WebSocket("wss://34e8-154-208-62-234.ngrok-free.app/ws");
+      const socket = new WebSocket("wss://72b5-154-208-62-234.ngrok-free.app/ws");
       // const socket = new WebSocket("ws://localhost:8080/ws");
       setWs(socket);
       socket.onopen = () => {
