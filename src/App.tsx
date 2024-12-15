@@ -34,7 +34,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (room && enteredRoom) {
       // const socket = new WebSocket("ws://localhost:8080/ws");
-      const socket = new WebSocket("ws://18.193.76.117:8080/ws");
+      const socket = new WebSocket("wss://18.193.76.117:8080/ws");
       setWs(socket);
       socket.onopen = () => {
         console.log("WebSocket connected.");
