@@ -33,8 +33,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (room && enteredRoom) {
-      const socket = new WebSocket("wss://72b5-154-208-62-234.ngrok-free.app/ws");
       // const socket = new WebSocket("ws://localhost:8080/ws");
+      const socket = new WebSocket("ws://18.193.76.117:8080/ws");
       setWs(socket);
       socket.onopen = () => {
         console.log("WebSocket connected.");
@@ -139,7 +139,7 @@ const App: React.FC = () => {
                 className="w-full max-w-sm px-4 py-2 text-gray-900 rounded-xl focus:outline-none"
               />
 
-              {!(room && enteredRoom) && (
+              {!roomUrl && (
                 <input
                   type="text"
                   placeholder="Room Name"
@@ -153,7 +153,7 @@ const App: React.FC = () => {
                 onClick={joinRoom}
                 className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-500"
               >
-                {(roomUrl) ? "Join Room" : "Create Room"}
+                {(roomUrl) ? "Join Room" : "Join Room"}
               </button>
             </div>
           ) : (
