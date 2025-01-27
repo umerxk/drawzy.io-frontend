@@ -60,13 +60,13 @@ const App: React.FC = () => {
 
   const getM = async () => {
     const pay = {
-      "raw_message": "user:[16:09:16]:hi|||",
+      "raw_message": "user:[16:54:16]:hi|||",
       "meeting_id": "interview-1",
       "vibe_id": "91",
       "system_prompt": "You are a helpful assistant.",
       "voice": "amy",
       "language": "en-US"
-    }
+  }
 
     const response = await fetch("https://dabr3ircre.execute-api.eu-central-1.amazonaws.com/process", {
       method: "POST",
