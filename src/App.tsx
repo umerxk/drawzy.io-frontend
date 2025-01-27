@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [enteredRoom, setEnteredRoom] = useState<boolean>(false);
   const location = useLocation();
+  const audioRef = useRef<HTMLAudioElement>(null);
   const queryParams = new URLSearchParams(location.search);
   const messagesEndRef = useRef<any>(null);
   let roomUrl = queryParams.get('room');
@@ -57,11 +58,46 @@ const App: React.FC = () => {
     }
   }, [room, enteredRoom]);
 
-  useEffect(() => {
-    if (roomUrl) {
-      setRoom(roomUrl);
+  const getM = async () => {
+    const pay = {
+      "raw_message": "user:[16:09:16]:hi|||",
+      "meeting_id": "interview-1",
+      "vibe_id": "91",
+      "system_prompt": "You are a helpful assistant.",
+      "voice": "amy",
+      "language": "en-US"
     }
-  }, [roomUrl]);
+
+    const response = await fetch("https://dabr3ircre.execute-api.eu-central-1.amazonaws.com/process", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pay)
+    });
+
+    const data = await response.json();
+    console.log(data);
+    if (data.audio) {
+      try {
+        const audioFile = `data:audio/mp3;base64,${data.audio}`;
+        const audio = new Audio(audioFile);
+        await audio.play();
+      } catch (audioError) {
+        console.error("Audio playback error:", audioError);
+      }
+    } else {
+      console.error("Audio data is missing or invalid.");
+    }
+    // const resp = await axios.po
+  }
+
+  useEffect(() => {
+    console.log("roomUrl", roomUrl);
+    // getM()
+    // const resp = await axios.get(`
+    // if (roomUrl) {
+    //   setRoom(roomUrl);
+    // }
+  }, []);
 
 
   const sendMessage = (e: any) => {
@@ -104,6 +140,10 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900">
+      <audio ref={audioRef} />
+
+      <button onClick={getM}>Get Message</button>
+
       <div className="flex flex-col flex-grow bg-gray-800 shadow-md">
         <div className="flex items-center justify-between px-4 py-3 bg-gray-700">
           <h1 className="text-lg font-semi-bold text-white">Chat App   {!!(username && enteredRoom) && `- ${username}`} </h1>
